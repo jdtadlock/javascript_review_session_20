@@ -14,16 +14,17 @@ class Form extends Component {
     axios.post('/api/shop', {
       name: this.state.name
     }).then(res => {
-      // Maybe redirect to Main?
       this.setState({
         name: ''
       });
 
+      // Redirect to root url route
       this.props.history.push('/');
     });
   }
 
   handleChange = (event) => {
+    // console.log(event.target.value); // what is being typed in the box
     this.setState({
       name: event.target.value
     });

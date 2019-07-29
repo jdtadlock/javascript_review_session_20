@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const bcrypt = require('bcryptjs');
+
 if (mongoose.connection.readyState === 0)
     mongoose.connect(require('../connection-config.js'))
         .catch(err => {
@@ -8,27 +10,31 @@ if (mongoose.connection.readyState === 0)
 
 
 
-let ShopSchema = new Schema({
-    name: String,
-    coffees: [{ type: Schema.Types.ObjectId, ref: 'Coffee' }],
+let UserSchema = new Schema({
+
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
 
-ShopSchema.pre('save', function (next) {
+UserSchema.pre('save', function (next) {
+    this.password = bcrypt.hashSync(this.password, 10);
     this.updatedAt = Date.now();
     next();
 });
 
-ShopSchema.pre('update', function () {
+UserSchema.pre('update', function () {
     this.constructor.update({ _id: this._id }, { $set: { updatedAt: Date.now() } });
 });
 
-ShopSchema.pre('findOneAndUpdate', function () {
+UserSchema.pre('findOneAndUpdate', function () {
     this.constructor.update({ _id: this._id }, { $set: { updatedAt: Date.now() } });
 });
 
+const User = mongoose.model('User', UserSchema);
 
+User.prototype.validatePassword = function (val) {
+    return bcrypt.compareSync(val, this.password);
+}
 
-/** @name db.Shop */
-module.exports = mongoose.model('Shop', ShopSchema);
+/** @name db.User */
+module.exports = User;

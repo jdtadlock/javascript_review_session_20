@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const { Shop } = require('../db');
+const { Shop, Coffee } = require('../db');
+const { isAuthenticated } = require('../auth');
 
 // // localhost:5000/api/test
 // router.get('/test', (req, res) => {
@@ -11,9 +12,19 @@ const { Shop } = require('../db');
 //   // Get all the notes and send to the front
 // });
 
+// Shop.find({}).deleteMany({}).then(() => console.log('Shops removed.'));
+// Coffee.find({}).deleteMany({}).then(() => console.log('Coffee removed.'));
+
+// Shop.find({})
+//   .populate('coffees')
+//   .then(shops => {
+//     console.log(shops);
+//   })
+
 // localhost:5000/api/shops -- GET
 router.get('/shops', (req, res) => {
   Shop.find({})
+    .populate('coffees')
     .then(shops => {
       res.json({
         shops: shops
@@ -23,7 +34,7 @@ router.get('/shops', (req, res) => {
 
 
 // localhost:5000/api/shop -- POST
-router.post('/shop', (req, res) => {
+router.post('/shop', isAuthenticated, (req, res) => {
   Shop.create({
     name: req.body.name
   }).then(shop => {
@@ -33,6 +44,26 @@ router.post('/shop', (req, res) => {
     });
     // res.redirect('/');// Handlebars
   })
+});
+
+// localhost:5000/api/coffee -- POST
+router.post('/coffee', (req, res) => {
+  Shop.findOne({ _id: req.body.shopId })
+    .then(shop => {
+      let coffee = new Coffee({
+        name: req.body.coffee,
+        type: req.body.type,
+        shopId: shop._id
+      });
+
+      shop.coffees.push(coffee);
+
+      coffee.save().then(() => {
+        shop.save().then(() => {
+          res.send({ success: 1, message: 'Coffee saved successfully!' });
+        });
+      });
+    })
 });
 
 

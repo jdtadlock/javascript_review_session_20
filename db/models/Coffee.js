@@ -10,7 +10,8 @@ if (mongoose.connection.readyState === 0)
 
 let CoffeeSchema = new Schema({
     name: String, // Columbian, Original
-    type: String, // Dark, Medium, Light
+    type: String, // Dark, Medium, Light,
+    shopId: { type: Schema.Types.ObjectId, ref: 'Shop' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

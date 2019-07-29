@@ -3,8 +3,7 @@ import axios from 'axios';
 
 class Main extends Component {
   state = {
-    shops: [],
-    title: 'Our awesome app!'
+    shops: []
   }
   // Get all shops
   // Make a request initially when component loads
@@ -13,11 +12,59 @@ class Main extends Component {
     axios.get('/api/shops')
       .then(res => {
         // all the data on res.data
-        console.log(res.data.shops);
+        let shops = res.data.shops;
+
+        shops = shops.map(shop => {
+          shop.coffee = '';
+          shop.type = '';
+          return shop;
+        });
+        console.log(shops);
         this.setState({
-          shops: [...res.data.shops] // array of shops -- don't mutate!
+          shops: shops // array of shops -- don't mutate!
         });
       });
+  }
+
+  addCoffee = (event) => {
+    event.preventDefault();
+
+    let shops = [...this.state.shops];
+
+    let shop = shops.find(shop => shop._id === event.target.dataset.id);
+
+    let { coffee, type } = shop;
+
+    axios.post('/api/coffee', {
+      shopId: shop._id,
+      coffee: coffee,
+      type: type
+    }).then(res => {
+
+      shop.coffees.push({
+        name: coffee,
+        type: type
+      });
+
+      this.setState({
+        shops: shops
+      });
+
+    });
+  }
+
+  handleChange = (event) => {
+    let id = event.target.id;
+
+    let shops = [...this.state.shops];
+
+    let shop = shops.find(shop => shop._id === id);
+
+    shop[event.target.name] = event.target.value;
+
+    this.setState({
+      shops: [...shops]
+    });
   }
 
   // Loop through them and show all the shops in our view
@@ -28,11 +75,28 @@ class Main extends Component {
       <div>
         <h1>Main View</h1>
         {/* Loop through and show all shops */}
-        {this.state.shops.map(shop => (
-          <div key={shop.name} className="shop">
-            <h2>{shop.name}</h2>
-          </div>
-        ))}
+        <div className="shops">
+          {this.state.shops.map((shop, shop_index) => (
+            <div key={shop_index} className="shop">
+              <h2>{shop.name}</h2>
+
+              <form data-id={shop._id} onSubmit={this.addCoffee} className="column">
+                <input name="coffee" id={shop._id} onChange={this.handleChange} type="text" value={shop.coffee} placeholder="Coffee Name" />
+                <input name="type" id={shop._id} onChange={this.handleChange} type="text" value={shop.type} placeholder="Coffee Type" />
+                <button>Add Coffee</button>
+              </form>
+
+              <div className="coffees">
+                {shop.coffees.map((coffee, coffee_index) => (
+                  <div key={coffee_index} className="coffee">
+                    <h5>{coffee.name}</h5>
+                    <p>{coffee.type}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
