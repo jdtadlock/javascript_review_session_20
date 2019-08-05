@@ -4,17 +4,20 @@ const jwt = require('jsonwebtoken');
 function generateToken(id) {
   let token = jwt.sign({ userId: id }, secret);
 
-  console.log(token);
+  return token;
 }
 
 function isAuthenticated(req, res, next) {
-  let token = req.headers.authorization.split(' ')[1];
+  if (req.headers.auth_token) {
+    let token = req.headers.auth_token;
 
-  jwt.verify(token, secret, (err, data) => {
-    if (err) return res.status(401).send({ message: 'You are not authorized to access this data' });
+    jwt.verify(token, secret, (err, data) => {
+      if (err) return res.status(401).send({ message: 'You are not authorized to access this data' });
 
-    next();
-  });
+      next();
+    });
+  } else res.status(401).send({ message: 'You are not authorized to add a shop.' });
+
 }
 
 

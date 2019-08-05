@@ -11,6 +11,9 @@ class Form extends Component {
     event.preventDefault();
 
     // console.log(this.state.name);
+
+
+
     axios.post('/api/shop', {
       name: this.state.name
     }).then(res => {

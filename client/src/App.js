@@ -4,6 +4,7 @@ import { Route, Switch } from 'react-router-dom';
 
 import Main from './components/Main';
 import Form from './components/Form';
+import UserForm from './components/UserForm';
 import NotFound from './components/404';
 import Header from './components/Header';
 
@@ -23,7 +24,9 @@ function App() {
 
           {/* View Route to Show Form Component */}
           {/* locahost:3000/form should show Form */}
-          <Route exact path="/form" component={Form} />
+          <Route path="/form" component={Form} />
+
+          <Route path="/user" component={UserForm} />
 
           {/* 404 -- Catch all other views that don't have a route */}
           <Route component={NotFound}></Route>

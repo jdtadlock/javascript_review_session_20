@@ -11,7 +11,22 @@ if (mongoose.connection.readyState === 0)
 
 
 let UserSchema = new Schema({
-
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        validate: {
+            validator: function (val) {
+                const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                return emailRegex.test(val);
+            }
+        }
+    },
+    password: {
+        type: String,
+        required: true,
+        min: [5, 'You\'re password needs to be at least 5 characters long.']
+    },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

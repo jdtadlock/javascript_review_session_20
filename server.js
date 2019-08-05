@@ -14,6 +14,7 @@ app.use(express.json());
 
 // localhost:5000/api/<routes>
 app.use('/api', api_routes);
+// localhost:5000/auth
 app.use('/auth', auth_routes);
 
 app.listen(PORT, () => console.log('Listening on port %s', PORT));

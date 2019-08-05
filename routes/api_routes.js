@@ -47,7 +47,7 @@ router.post('/shop', isAuthenticated, (req, res) => {
 });
 
 // localhost:5000/api/coffee -- POST
-router.post('/coffee', (req, res) => {
+router.post('/coffee', isAuthenticated, (req, res) => {
   Shop.findOne({ _id: req.body.shopId })
     .then(shop => {
       let coffee = new Coffee({
